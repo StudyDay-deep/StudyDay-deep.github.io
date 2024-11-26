@@ -1,1 +1,192 @@
-<h1>    我真的没有时间，略略略！ </h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>生日快乐！</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Ma Shan Zheng', cursive;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            overflow: hidden;
+        }
+
+        .birthday-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+            perspective: 1000px;
+        }
+
+        .birthday-title {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: titleAnimation 2s infinite alternate;
+        }
+
+        .birthday-message {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transform: rotateX(30deg);
+            transition: all 0.5s;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #fff;
+            top: -10px;
+            z-index: -1;
+            animation: fall 5s linear infinite;
+        }
+
+        @keyframes titleAnimation {
+            from {
+                transform: scale(0.9);
+                color: #fff;
+            }
+            to {
+                transform: scale(1.1);
+                color: #ffd700;
+            }
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        .cake {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(to bottom, #ff69b4, #ff1493);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            margin-bottom: 20px;
+            animation: cakePulse 2s infinite alternate;
+        }
+
+        .candle {
+            width: 30px;
+            height: 100px;
+            background: white;
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+        }
+
+        .flame {
+            width: 20px;
+            height: 50px;
+            background: orange;
+            position: absolute;
+            top: -30px;
+            left: 5px;
+            border-radius: 50%;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes cakePulse {
+            from { transform: scale(0.95); }
+            to { transform: scale(1.05); }
+        }
+
+        @keyframes flicker {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+
+        .interactive-button {
+            padding: 10px 20px;
+            background-color: #fff;
+            color: #ff1493;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .interactive-button:hover {
+            transform: scale(1.1);
+            background-color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="birthday-container">
+        <div class="cake">
+            <div class="candle">
+                <div class="flame"></div>
+            </div>
+        </div>
+        
+        <h1 class="birthday-title">生日快乐！</h1>
+        
+        <div class="birthday-message">
+            愿你的生日如阳光般温暖，如星星般璀璨。
+            每一天都充满欢笑，每一刻都闪耀希望。
+            祝你今年所有的梦想都能实现，所有的期待都能绽放！
+        </div>
+        
+        <button class="interactive-button" onclick="playMusic()">点击播放生日歌</button>
+    </div>
+
+    <script>
+        // 生成彩带效果
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#ff1493', '#ffffff'];
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+
+        // 生日歌音频
+        const audio = new Audio('https://flowus.cn/share/ab7ee695-48e8-4f1a-a666-9e3f21c5d243');
+
+        function playMusic() {
+            audio.play();
+            
+            // 每0.1秒生成一个彩带
+            const confettiInterval = setInterval(createConfetti, 100);
+            
+            // 3秒后停止生成彩带
+            setTimeout(() => {
+                clearInterval(confettiInterval);
+            }, 3000);
+        }
+
+        // 初始化时生成一些彩带
+        for(let i = 0; i < 50; i++) {
+            createConfetti();
+        }
+    </script>
+</body>
+</html>
