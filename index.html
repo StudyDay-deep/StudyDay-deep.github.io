@@ -2,193 +2,255 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>生日快乐！</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>五子棋游戏</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
-        
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: 'Ma Shan Zheng', cursive;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            overflow: hidden;
+            box-sizing: border-box;
+            touch-action: manipulation;
         }
-
-        .birthday-container {
+        body {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
             text-align: center;
-            color: white;
-            perspective: 1000px;
-        }
-
-        .birthday-title {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            animation: titleAnimation 2s infinite alternate;
-        }
-
-        .birthday-message {
-            font-size: 1.5rem;
+            width: 100%;
             max-width: 600px;
-            margin: 20px;
-            padding: 20px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            transform: rotateX(30deg);
-            transition: all 0.5s;
+            padding: 10px;
         }
-
-        .confetti {
-            position: fixed;
-            width: 15px;
-            height: 15px;
-            background-color: #fff;
-            top: -10px;
-            z-index: -1;
-            animation: fall 5s linear infinite;
-        }
-
-        @keyframes titleAnimation {
-            from {
-                transform: scale(0.9);
-                color: #fff;
-            }
-            to {
-                transform: scale(1.1);
-                color: #ffd700;
-            }
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
-            }
-        }
-
-        .cake {
-            width: 250px;
-            height: 250px;
-            background: linear-gradient(to bottom, #ff69b4, #ff1493);
-            border-radius: 50% 50% 0 0;
+        #chessboard {
             position: relative;
-            margin-bottom: 20px;
-            animation: cakePulse 2s infinite alternate;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-image: 
+                linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            background-color: #ffffff;
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 0;
+            border: 2px solid #333;
+            touch-action: none;
         }
-
-        .candle {
-            width: 30px;
-            height: 100px;
-            background: white;
-            position: absolute;
-            top: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 10px;
-        }
-
-        .flame {
-            width: 20px;
-            height: 50px;
-            background: orange;
-            position: absolute;
-            top: -30px;
-            left: 5px;
-            border-radius: 50%;
-            animation: flicker 0.5s infinite alternate;
-        }
-
-        @keyframes cakePulse {
-            from { transform: scale(0.95); }
-            to { transform: scale(1.05); }
-        }
-
-        @keyframes flicker {
-            from { opacity: 0.7; }
-            to { opacity: 1; }
-        }
-
-        .interactive-button {
-            padding: 10px 20px;
-            background-color: #fff;
-            color: #ff1493;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
+        .cell {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
+            position: relative;
         }
-
-        .interactive-button:hover {
-            transform: scale(1.1);
-            background-color: #ffd700;
+        .piece {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .black-piece {
+            background-color: black;
+        }
+        .white-piece {
+            background-color: white;
+            border: 1px solid #999;
+        }
+        #control-panel {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #start-panel {
+            margin-bottom: 10px;
+        }
+        button, select {
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        #status {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            #game-container {
+                width: 100%;
+                padding: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="birthday-container">
-        <div class="cake">
-            <div class="candle">
-                <div class="flame"></div>
-            </div>
+    <div id="game-container">
+        <div id="start-panel">
+            <label>选择先手颜色：</label>
+            <select id="first-player">
+                <option value="black">黑棋</option>
+                <option value="white">白棋</option>
+            </select>
         </div>
-        
-        <h1 class="birthday-title">生日快乐！</h1>
-        
-        <div class="birthday-message">
-            愿你的生日如阳光般温暖，如星星般璀璨。
-            每一天都充满欢笑，每一刻都闪耀希望。
-            祝你今年所有的梦想都能实现，所有的期待都能绽放！
-            和傻奶龙一样！哈哈哈哈哈哈哈
-            我是1209，你呢？
+        <div id="chessboard"></div>
+        <div id="control-panel">
+            <button id="undo-btn">悔棋</button>
+            <button id="restart-btn">重新开始</button>
         </div>
-        
-        <button class="interactive-button" onclick="playMusic()">点击播放生日歌</button>
+        <div id="status"></div>
     </div>
 
     <script>
-        // 生成彩带效果
-        function createConfetti() {
-            const colors = ['#ff6b6b', '#4ecdc4', '#ffd700', '#ff1493', '#ffffff'];
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            
-            document.body.appendChild(confetti);
-            
-            setTimeout(() => {
-                confetti.remove();
-            }, 5000);
+        class GobangGame {
+            constructor() {
+                this.board = Array(15).fill().map(() => Array(15).fill(null));
+                this.currentPlayer = null;
+                this.gameOver = false;
+                this.moveHistory = [];
+                this.boardElement = document.getElementById('chessboard');
+                this.statusElement = document.getElementById('status');
+                this.firstPlayerSelect = document.getElementById('first-player');
+                this.undoBtn = document.getElementById('undo-btn');
+                this.restartBtn = document.getElementById('restart-btn');
+
+                this.initBoard();
+                this.bindEvents();
+            }
+
+            initBoard() {
+                this.boardElement.innerHTML = '';
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        const cell = document.createElement('div');
+                        cell.classList.add('cell');
+                        cell.dataset.x = i;
+                        cell.dataset.y = j;
+                        this.boardElement.appendChild(cell);
+                    }
+                }
+                this.startGame();
+            }
+
+            startGame() {
+                this.board = Array(15).fill().map(() => Array(15).fill(null));
+                this.currentPlayer = this.firstPlayerSelect.value;
+                this.gameOver = false;
+                this.moveHistory = [];
+                this.boardElement.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '');
+                this.statusElement.textContent = `当前执棋：${this.currentPlayer === 'black' ? '黑棋' : '白棋'}`;
+                this.undoBtn.disabled = true;
+            }
+
+            bindEvents() {
+                this.boardElement.addEventListener('click', (e) => this.handleCellClick(e));
+                this.undoBtn.addEventListener('click', () => this.undoMove());
+                this.restartBtn.addEventListener('click', () => this.startGame());
+                this.firstPlayerSelect.addEventListener('change', () => this.startGame());
+            }
+
+            handleCellClick(e) {
+                if (this.gameOver) return;
+
+                const cell = e.target.closest('.cell');
+                if (!cell) return;
+
+                const x = parseInt(cell.dataset.x);
+                const y = parseInt(cell.dataset.y);
+
+                if (this.board[x][y]) return;
+
+                this.placePiece(x, y);
+            }
+
+            placePiece(x, y) {
+                const piece = document.createElement('div');
+                piece.classList.add('piece', `${this.currentPlayer}-piece`);
+                piece.style.gridArea = `${x + 1} / ${y + 1}`;
+
+                const cell = this.boardElement.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                cell.appendChild(piece);
+
+                this.board[x][y] = this.currentPlayer;
+                this.moveHistory.push({ x, y, player: this.currentPlayer });
+                this.undoBtn.disabled = false;
+
+                if (this.checkWin(x, y)) {
+                    this.gameOver = true;
+                    this.statusElement.textContent = `${this.currentPlayer === 'black' ? '黑棋' : '白棋'}获胜!`;
+                    return;
+                }
+
+                this.currentPlayer = this.currentPlayer === 'black' ? 'white' : 'black';
+                this.statusElement.textContent = `当前执棋：${this.currentPlayer === 'black' ? '黑棋' : '白棋'}`;
+            }
+
+            undoMove() {
+                if (this.moveHistory.length === 0) return;
+
+                const lastMove = this.moveHistory.pop();
+                const { x, y, player } = lastMove;
+
+                this.board[x][y] = null;
+                const cell = this.boardElement.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                cell.innerHTML = '';
+
+                this.currentPlayer = player;
+                this.statusElement.textContent = `当前执棋：${this.currentPlayer === 'black' ? '黑棋' : '白棋'}`;
+
+                if (this.moveHistory.length === 0) {
+                    this.undoBtn.disabled = true;
+                }
+            }
+
+            checkWin(x, y) {
+                const directions = [
+                    [1, 0], [0, 1], [1, 1], [1, -1]
+                ];
+
+                for (const [dx, dy] of directions) {
+                    let count = 1;
+                    for (let step = 1; step < 5; step++) {
+                        const newX = x + step * dx;
+                        const newY = y + step * dy;
+                        const reverseX = x - step * dx;
+                        const reverseY = y - step * dy;
+
+                        if (this.isValidCell(newX, newY) && this.board[newX][newY] === this.currentPlayer) {
+                            count++;
+                        }
+                        if (this.isValidCell(reverseX, reverseY) && this.board[reverseX][reverseY] === this.currentPlayer) {
+                            count++;
+                        }
+                    }
+                    if (count >= 5) return true;
+                }
+                return false;
+            }
+
+            isValidCell(x, y) {
+                return x >= 0 && x < 15 && y >= 0 && y < 15;
+            }
         }
 
-        // 生日歌音频
-        const audio = new Audio('https://flowus.cn/share/ab7ee695-48e8-4f1a-a666-9e3f21c5d243');
-
-        function playMusic() {
-            audio.play();
-            
-            // 每0.1秒生成一个彩带
-            const confettiInterval = setInterval(createConfetti, 100);
-            
-            // 3秒后停止生成彩带
-            setTimeout(() => {
-                clearInterval(confettiInterval);
-            }, 3000);
-        }
-
-        // 初始化时生成一些彩带
-        for(let i = 0; i < 50; i++) {
-            createConfetti();
-        }
+        new GobangGame();
     </script>
 </body>
 </html>
